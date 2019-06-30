@@ -10,6 +10,7 @@ import cmds
 import cmds.bash
 import cmds.dnf
 import cmds.flatpak
+import cmds.autoslowmode
 
 class UnnamedClient(discord.Client):
     async def on_ready(self):
@@ -23,6 +24,8 @@ class UnnamedClient(discord.Client):
                 await message.channel.send("Reloaded!")
                 cmds.bash = reload(cmds.bash)
                 cmds.dnf = reload(cmds.dnf)
+                cmds.flatpak = reload(cmds.flatpak)
+                cmds.autoslowmode = reload(cmds.autoslowmode)
 
         elif message.content.startswith("sudo eval "):
             if message.author.guild_permissions.administrator:
@@ -38,6 +41,8 @@ class UnnamedClient(discord.Client):
         elif message.content.startswith("bash -c "):
             await message.channel.trigger_typing()
             await cmds.bash.handle_message(message)
+
+        await cmds.autoslowmode.handle_message(message)
 
 config = configparser.ConfigParser()
 
