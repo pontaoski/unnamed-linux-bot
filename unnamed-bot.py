@@ -12,6 +12,7 @@ import cmds.bash
 import cmds.dnf
 import cmds.flatpak
 import cmds.autoslowmode
+import cmds.info
 
 class UnnamedClient(discord.Client):
 
@@ -42,6 +43,7 @@ class UnnamedClient(discord.Client):
                 cmds.dnf = reload(cmds.dnf)
                 cmds.flatpak = reload(cmds.flatpak)
                 cmds.autoslowmode = reload(cmds.autoslowmode)
+                cmds.info = reload(cmds.info)
 
         elif message.content.startswith("sudo eval "):
             if message.author.guild_permissions.administrator:
@@ -57,6 +59,11 @@ class UnnamedClient(discord.Client):
         elif message.content.startswith("bash -c "):
             await message.channel.trigger_typing()
             await cmds.bash.handle_message(message)
+
+        elif message.content.startswith("sudo info "):
+            await cmds.info.handle_message(message)
+        elif message.content.startswith("sudo info"):
+            await message.channel.send("Not enough arguments!\nUsage: `sudo info <query>`")
 
         await cmds.autoslowmode.handle_message(message)
 
