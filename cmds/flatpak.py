@@ -6,8 +6,7 @@ import json
 import requests
 import time
 
-from os import path
-from os import mkdir
+from pathlib import Path
 
 # flatpak search 
 async def handle_message(message):
@@ -23,30 +22,29 @@ async def handle_message(message):
         query = query.replace("-r", "").strip()
     
     app_list = []
+    cache_dir = Path("./cache")
+    cache_file = cache_dir / "flatpak.json"
     
-    if path.exists("cache"):
-        if (path.exists("cache/flatpak.json") and force_update != True):
-            with open("cache/flatpak.json") as flatpak_cache:
+    if (cache_dir).is_dir():
+        if (cache_file.is_file() and force_update != True):
+            with cache_file.open() as flatpak_cache:
                 app_list = json.load(flatpak_cache)
                 
                 # do not update if the cache is less than one hour old
-                if app_list[-1]["timestamp"] - time.time() < 3600: 
+                if app_list[-1]['timestamp'] - time.time() < 3600: 
                     update_required = False;
     else:
-        mkdir("cache")
+        Path.mkdir(cache_dir)
         
     if update_required:
         req = requests.get("https://flathub.org/api/v1/apps")
         app_list = json.loads(req.text)
         
         # adds the timestamp of the current database update to the end of the array. 
-        timestamp_json = json.loads("{}")
-        timestamp_json["timestamp"] = time.time()
+        timestamp_json = json.loads(f"{{\"timestamp\" : {time.time()}}}")
         app_list.append(timestamp_json)
         
-        flatpak_cache = open("cache/flatpak.json", mode="w")
-        flatpak_cache.write(json.dumps(app_list))
-        flatpak_cache.close()
+        cache_file.write_text(json.dumps(app_list))
         print("flatpak cache updated in cache/flatpak.json")
         
     name_match = []
@@ -69,17 +67,17 @@ async def handle_message(message):
         if "timestamp" in app.keys():
             continue
         
-        if query_casefold in app["name"].casefold():
+        if query_casefold in app['name'].casefold():
             name_match.append(app)
             total_matches += 1
             continue
         
-        if query_casefold in app["flatpakAppId"].casefold():
+        if query_casefold in app['flatpakAppId'].casefold():
             appid_match.append(app)
             total_matches += 1
             continue
         
-        if query_casefold in app["summary"].casefold():
+        if query_casefold in app['summary'].casefold():
             summary_match.append(app)
             total_matches += 1
             continue
@@ -87,19 +85,19 @@ async def handle_message(message):
     response = ""
         
     if total_matches == 0:
-        response += '**No search results for "' + query + '" on Flathub.**'
+        response += f"**No search results for \"{query}\" on Flathub.**"
     else:
-        response += '**Search results for "' + query + '" on Flathub.**\n\n'
+        response += f"**Search results for \"{query}\" on Flathub.**\n\n"
         
         for app in name_match:
-            response += '  ‣ `' + app["name"] + '` - ' + app["summary"] + '\n'
+            response += f"  ‣ `{app['name']}` - {app['summary']}\n"
         for app in appid_match:
-            response += '  ‣ `' + app["name"] + '` - ' + app["summary"] + '\n'
+            response += f"  ‣ `{app['name']}` - {app['summary']}\n"
         for app in summary_match:
-            response += '  ‣ `' + app["name"] + '` - ' + app["summary"] + '\n'
+            response += f"  ‣ `{app['name']}` - {app['summary']}\n"
         
         urlquery = urllib.parse.quote(query)
-        response += '\nView full results: ' + '<https://flathub.org/apps/search/' + urlquery + '>'
+        response += f"\nView full results: <https://flathub.org/apps/search/{urlquery}>"
         
     await message.channel.send(response)
 
