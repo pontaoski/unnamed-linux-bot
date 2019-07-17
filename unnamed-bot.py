@@ -19,11 +19,11 @@ class UnnamedClient(discord.Client):
 
     async def on_member_join(self, member):
         channel = self.get_channel(int(config['Discord']['WelcomeChannel']))
-        message = await channel.send("Welcome to the server, <@" + str(member.id) + ">! To join, please react to the heart emoji.")
-        await message.add_reaction("😶")
-        await message.add_reaction("💬")
+        message = await channel.send("Welcome to the server, <@" + str(member.id) + ">! \nPlease read our rules at https://unnamed-linux-community.github.io/rules.html.\nWhen you have read them, click the heart that's the same color as the website's top bar.")
+        await message.add_reaction("💚")
+        await message.add_reaction("❤")
         await message.add_reaction("💛")
-        await message.add_reaction("👰")
+        await message.add_reaction("💙")
 
     async def on_reaction_add(self, reaction, user):
         channel = self.get_channel(int(config['Discord']['WelcomeChannel']))
