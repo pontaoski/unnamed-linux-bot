@@ -12,16 +12,17 @@ import cmds.dnf
 import cmds.flatpak
 import cmds.autoslowmode
 import cmds.info
+import cmds.ss
 
 class UnnamedClient(discord.Client):
 
     async def on_member_join(self, member):
         channel = self.get_channel(int(config['Discord']['WelcomeChannel']))
-        message = await channel.send("Welcome to the server, <@" + str(member.id) + ">! To join, please react to the heart emoji.")
-        await message.add_reaction("😶")
-        await message.add_reaction("💬")
+        message = await channel.send("Welcome to the server, <@" + str(member.id) + ">! \nPlease read our rules at https://unnamed-linux-community.github.io/rules.html.\nWhen you have read them, click the heart that's the same color as the website's top bar.")
+        await message.add_reaction("💚")
+        await message.add_reaction("❤")
         await message.add_reaction("💛")
-        await message.add_reaction("👰")
+        await message.add_reaction("💙")
 
     async def on_reaction_add(self, reaction, user):
         channel = self.get_channel(int(config['Discord']['WelcomeChannel']))
@@ -43,6 +44,7 @@ class UnnamedClient(discord.Client):
                 cmds.flatpak = reload(cmds.flatpak)
                 cmds.autoslowmode = reload(cmds.autoslowmode)
                 cmds.info = reload(cmds.info)
+                cmds.ss = reload(cmds.ss)
 
         elif message.content.startswith("sudo eval "):
             if message.author.guild_permissions.administrator:
@@ -63,6 +65,14 @@ class UnnamedClient(discord.Client):
             await cmds.info.handle_message(message)
         elif message.content.startswith("sudo info"):
             await message.channel.send("Not enough arguments!\nUsage: `sudo info <query>`")
+
+        elif message.content.startswith("sudo ss "):
+            await cmds.ss.handle_message(message)
+        elif message.content.startswith("sudo ss"):
+            await message.channel.send("Not enough arguments!\nSee `sudo help` for how to use this command.")
+        
+        elif message.content.startswith("sudo help"):
+            await message.channel.send("See help at https://unnamed-linux-community.github.io/.")
 
         await cmds.autoslowmode.handle_message(message)
 
