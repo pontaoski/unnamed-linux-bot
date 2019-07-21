@@ -14,6 +14,7 @@ import cmds.flatpak
 import cmds.autoslowmode
 import cmds.info
 import cmds.ss
+import cmds.about
 
 class UnnamedClient(discord.Client):
 
@@ -46,6 +47,7 @@ class UnnamedClient(discord.Client):
                 cmds.autoslowmode = reload(cmds.autoslowmode)
                 cmds.info = reload(cmds.info)
                 cmds.ss = reload(cmds.ss)
+                cmds.about = reload(cmds.about)
 
         elif message.content.startswith("sudo eval "):
             if message.author.guild_permissions.administrator:
@@ -66,6 +68,9 @@ class UnnamedClient(discord.Client):
             await cmds.info.handle_message(message)
         elif message.content.startswith("sudo info"):
             await message.channel.send("Not enough arguments!\nUsage: `sudo info <query>`")
+
+        elif message.content.startswith("sudo about"):
+            await cmds.about.handle_message(message)
 
         elif message.content.startswith("sudo ss "):
             await cmds.ss.handle_message(message)
