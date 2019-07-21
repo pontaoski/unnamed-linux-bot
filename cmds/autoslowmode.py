@@ -12,6 +12,8 @@ async def handle_message(message):
     global slowdict
     author = str(message.author.id)
     time = message.created_at
+    if (message.author.bot):
+        return
 
     if slowdict.get(author+"-lasttime", None) is not None:
         if slowdict.get(author+"-messagecount", None) is not None:
