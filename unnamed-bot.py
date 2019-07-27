@@ -15,16 +15,17 @@ import cmds.autoslowmode
 import cmds.info
 import cmds.ss
 import cmds.about
+import cmds.welcomemsg
 
 class UnnamedClient(discord.Client):
 
-    async def on_member_join(self, member):
-        channel = self.get_channel(int(config['Discord']['WelcomeChannel']))
-        message = await channel.send("Welcome to the server, <@" + str(member.id) + ">! \nPlease read our rules at https://unnamed-linux-community.github.io/rules.html.\nWhen you have read them, click the heart that's the same color as the website's top bar.")
-        await message.add_reaction("💚")
-        await message.add_reaction("❤")
-        await message.add_reaction("💛")
-        await message.add_reaction("💙")
+    # async def on_member_join(self, member):
+        # channel = self.get_channel(int(config['Discord']['WelcomeChannel']))
+        # message = await channel.send("Welcome to the server, <@" + str(member.id) + ">! \nPlease read our rules at https://linux-cafe.github.io/rules.html.\nWhen you have read them, click the heart that's the same color as the website's top bar.")
+        # await message.add_reaction("💚")
+        # await message.add_reaction("❤")
+        # await message.add_reaction("💛")
+        # await message.add_reaction("💙")
 
     async def on_reaction_add(self, reaction, user):
         channel = self.get_channel(int(config['Discord']['WelcomeChannel']))
@@ -48,6 +49,7 @@ class UnnamedClient(discord.Client):
                 cmds.info = reload(cmds.info)
                 cmds.ss = reload(cmds.ss)
                 cmds.about = reload(cmds.about)
+                cmds.welcomemsg = reload(cmds.welcomemsg)
 
         elif message.content.startswith("sudo eval "):
             if message.author.guild_permissions.administrator:
@@ -79,6 +81,9 @@ class UnnamedClient(discord.Client):
         
         elif message.content.startswith("sudo help"):
             await message.channel.send("See help at https://unnamed-linux-community.github.io/.")
+        
+        elif message.content.startswith("sudo welcomemessage"):
+            await cmds.welcomemsg.handle_message(message)
 
         await cmds.autoslowmode.handle_message(message)
 
