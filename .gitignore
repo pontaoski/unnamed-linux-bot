@@ -1,4 +1,7 @@
 config.ini
 .vscode
 cmds/__pycache__
+cache
 ss.db
+.kdev4
+unnamed-linux-bot.kdev4

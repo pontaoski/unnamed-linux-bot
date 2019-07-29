@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 from importlib import reload
-import os.path
 from os import path
 
 import discord
