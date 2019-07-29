@@ -9,9 +9,9 @@ import json
 async def handle_message(message):
     query = cmds.cmdutils.get_content(message.content)
     
-    req = requests.get(f"https://apps.fedoraproject.org/packages/fcomm_connector\
-        /xapian/query/search_packages/{{\"filters\":{{\"search\":\"{query}\"}},\
-        \"rows_per_page\":10,\"start_row\":0}}")
+    req = requests.get(f"https://apps.fedoraproject.org/packages/fcomm_connector" \
+                       f"/xapian/query/search_packages/{{\"filters\":{{\"search\":" \
+                       f"\"{query}\"}},\"rows_per_page\":10,\"start_row\":0}}")
     req_json = req.json()
     
     response = ""
@@ -20,8 +20,8 @@ async def handle_message(message):
         response += f"**No search results for \"{query}\" on Fedora Packages.**"
         
     else:
-        response += f"**{req_json['total_rows']} search results for \"{query}\" \
-            on Fedora Packages.**\n\n"
+        response += f"**{req_json['total_rows']} search results for \"{query}\"" \
+                    f" on Fedora Packages.**\n\n"
         
         add_count = 0
         for package in req_json['rows']:
