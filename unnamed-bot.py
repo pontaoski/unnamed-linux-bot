@@ -15,6 +15,9 @@ import cmds.info
 import cmds.ss
 import cmds.about
 import cmds.welcomemsg
+import cmds.zypper
+
+config = configparser.ConfigParser()
 
 class UnnamedClient(discord.Client):
 
@@ -36,11 +39,12 @@ class UnnamedClient(discord.Client):
         print('Logged on as', self.user)
 
     async def on_message(self, message):
+        global config
         if message.author == self.user:
             return
         elif message.content.startswith("sudo reload"):
             if message.author.guild_permissions.administrator:
-                await message.channel.send("Reloaded!")
+                await message.channel.send("Reloading...")
                 cmds.bash = reload(cmds.bash)
                 cmds.dnf = reload(cmds.dnf)
                 cmds.flatpak = reload(cmds.flatpak)
@@ -49,6 +53,9 @@ class UnnamedClient(discord.Client):
                 cmds.ss = reload(cmds.ss)
                 cmds.about = reload(cmds.about)
                 cmds.welcomemsg = reload(cmds.welcomemsg)
+                cmds.zypper = reload(cmds.zypper)
+                cmds.zypper.init_dnf(config)
+                await message.channel.send("Reloaded!")
 
         elif message.content.startswith("sudo eval "):
             if message.author.guild_permissions.administrator:
@@ -60,6 +67,10 @@ class UnnamedClient(discord.Client):
 
         elif message.content.startswith(("dnf search ", "dnf se ")):
             await cmds.dnf.handle_message(message)
+
+        elif message.content.startswith(("zypper search ", "zypper se ", "zyp se ", "zyp search ")):
+            await message.channel.trigger_typing()
+            await cmds.zypper.handle_message(message)
 
         elif message.content.startswith("bash -c "):
             await message.channel.trigger_typing()
@@ -86,8 +97,6 @@ class UnnamedClient(discord.Client):
 
         await cmds.autoslowmode.handle_message(message)
 
-config = configparser.ConfigParser()
-
 if path.exists("config.ini"):
     config.read("config.ini")
 else:
@@ -100,5 +109,7 @@ else:
     print("You have not configured this bot. Please use config.ini to configure this bot.")
     exit()
     
+cmds.zypper.init_dnf(config)
+
 client = UnnamedClient()
 client.run(config['Discord']['Token'])
