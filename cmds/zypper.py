@@ -18,11 +18,9 @@ async def handle_message(message: discord.Message):
 
     query = cmds.cmdutils.get_content(message.content)
 
-    print("query: " + query)
-
     dnf_query = dnf_obj.sack.query()
     available_packages = dnf_query.available()
-    available_packages = available_packages.filter(name__substr=query,arch="x86_64")
+    available_packages = available_packages.filter(name__substr=query,arch=["noarch","x86_64"])
 
     pkgs = []
 
@@ -35,8 +33,6 @@ async def handle_message(message: discord.Message):
     except:
         await message.channel.send("There was an error!")
 
-    print(pkgs)
-    print('done!')
 
 def init_dnf(config: configparser.ConfigParser):
     global dnf_obj
