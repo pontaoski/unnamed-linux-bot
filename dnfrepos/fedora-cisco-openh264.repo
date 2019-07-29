@@ -1,0 +1,10 @@
+[fedora-cisco-openh264]
+name=Fedora 30 openh264 (From Cisco) - x86_64
+baseurl=https://codecs.fedoraproject.org/openh264/30/x86_64/
+type=rpm
+enabled=0
+enabled_metadata=1
+metadata_expire=14d
+repo_gpgcheck=1
+gpgcheck=0
+skip_if_unavailable=True

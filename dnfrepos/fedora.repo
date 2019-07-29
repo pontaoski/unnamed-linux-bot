@@ -1,0 +1,8 @@
+[fedora]
+name=Fedora 30 x86_64
+metalink=https://mirrors.fedoraproject.org/metalink?repo=fedora-30&arch=x86_64
+enabled=0
+repo_gpgcheck=0
+type=rpm
+gpgcheck=0
+skip_if_unavailable=False

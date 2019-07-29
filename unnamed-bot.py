@@ -44,6 +44,7 @@ class UnnamedClient(discord.Client):
             return
         elif message.content.startswith("sudo reload"):
             if message.author.guild_permissions.administrator:
+                await self.change_presence(status=discord.Status.dnd)
                 await message.channel.send("Reloading...")
                 cmds.bash = reload(cmds.bash)
                 cmds.dnf = reload(cmds.dnf)
@@ -54,8 +55,12 @@ class UnnamedClient(discord.Client):
                 cmds.about = reload(cmds.about)
                 cmds.welcomemsg = reload(cmds.welcomemsg)
                 cmds.zypper = reload(cmds.zypper)
+                await message.channel.send("Initializing zypper...")
                 cmds.zypper.init_dnf(config)
+                await message.channel.send("Initializing dnf...")
+                cmds.dnf.init_dnf(config)
                 await message.channel.send("Reloaded!")
+                await self.change_presence(status=discord.Status.online)
 
         elif message.content.startswith("sudo eval "):
             if message.author.guild_permissions.administrator:
@@ -109,6 +114,9 @@ else:
     print("You have not configured this bot. Please use config.ini to configure this bot.")
     exit()
     
+print("Initializing dnf...")
+cmds.dnf.init_dnf(config)
+print("Initializing zypper...")
 cmds.zypper.init_dnf(config)
 
 client = UnnamedClient()

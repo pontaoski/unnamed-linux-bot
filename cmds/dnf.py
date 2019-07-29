@@ -3,51 +3,48 @@ import discord
 import urllib.parse
 import cmds.cmdutils
 import requests
-import json
+import configparser
+import tempfile
+
+import dnf
+import dnf.base
+import dnf.conf
+import dnf.const
+
+fedora_dnf_obj = dnf.Base()
 
 # 'dnf search query'
-async def handle_message(message):
-    query = cmds.cmdutils.get_content(message.content)
-    
-    req = requests.get(f"https://apps.fedoraproject.org/packages/fcomm_connector" \
-                       f"/xapian/query/search_packages/{{\"filters\":{{\"search\":" \
-                       f"\"{query}\"}},\"rows_per_page\":10,\"start_row\":0}}")
-    req_json = req.json()
-    
-    response = ""
-    
-    if (req_json["total_rows"] == 0):
-        response += f"**No search results for \"{query}\" on Fedora Packages.**"
-        
-    else:
-        response += f"**{req_json['total_rows']} search results for \"{query}\"" \
-                    f" on Fedora Packages.**\n\n"
-        
-        add_count = 0
-        for package in req_json['rows']:
-            # only include top three results in response.
-            if (add_count == 3): 
-                break
-            
-            # only include in response if summary is not empty.
-            if (package['summary'] != "no summary in mdapi"): 
-                response += f"  ‣ `{package['name']}` - \"{package['summary']}\"\n"
-                add_count += 1
-                
-            # prioritize adding sub-packages into results, if any, after the main package. 
-            if ("sub_pkgs" in package.keys()):
-                for sub_package in package['sub_pkgs']:
-                    if (add_count == 3):
-                        break
-                    if (sub_package['summary'] != "no summary in mdapi"):
-                        response += f"  ‣ `{sub_package['name']}` - \"{sub_package['summary']}\"\n"
-                        add_count += 1
-            
-        if (add_count == 0):
-            response += "  No packages with descriptions found in the first 10 results;\n"
-        
-        urlquery = urllib.parse.quote(query)
-        response += f"\nView full results: <https://apps.fedoraproject.org/packages/s/{urlquery}>"
+async def handle_message(message: discord.Message):
+    global fedora_dnf_obj
 
-    # embed = discord.Embed(title="dnf search results for " + query, color=0x294172, url="https://apps.fedoraproject.org/packages/s/" + urlquery)
-    await message.channel.send(response)
+    query = cmds.cmdutils.get_content(message.content)
+
+    dnf_query = fedora_dnf_obj.sack.query()
+    available_packages = dnf_query.available()
+    available_packages = available_packages.filter(name__substr=query,arch=["noarch","x86_64"])
+
+    pkgs = []
+
+    for pkg in available_packages:
+        pkgs.append(" ‣ `{}` - {}\n".format(pkg.name, pkg.summary))
+
+    try:
+        await message.channel.send("**{} search results for `{}` in Fedora**\n\n".format(len(pkgs), query))
+        await message.channel.send("".join(pkgs[:3]))
+    except:
+        await message.channel.send("There was an error!")
+
+def init_dnf(config: configparser.ConfigParser):
+    global fedora_dnf_obj
+    
+    fedora_dnf_obj.conf.ignorearch = True
+    fedora_dnf_obj.conf.logdir = tempfile.mkdtemp(suffix="dnflog")
+    fedora_dnf_obj.conf.reposdir = config["Dnf"]["RepoPath"]
+    fedora_dnf_obj.conf.keepcache = True
+    fedora_dnf_obj.conf.cachedir = tempfile.mkdtemp()
+    
+    fedora_dnf_obj.read_all_repos()
+
+    print(config["Dnf"]["RepoPath"])
+
+    fedora_dnf_obj.fill_sack(load_system_repo=False)
