@@ -30,7 +30,7 @@ async def handle_message(message: discord.Message):
         pkgs.append(" ‣ `{}` - {}\n".format(pkg.name, pkg.summary))
 
     try:
-        await message.channel.send("**{} search results for `{}` in openSUSE**\n\n").format(len(pkgs), query)
+        await message.channel.send("**{} search results for `{}` in openSUSE**\n\n".format(len(pkgs), query))
         await message.channel.send("".join(pkgs[:3]))
     except:
         await message.channel.send("There was an error!")
