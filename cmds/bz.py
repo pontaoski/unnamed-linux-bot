@@ -20,6 +20,7 @@ async def github_message(tag, message: discord.Message):
     issue = repo.get_issue(number=int(tags[2]))
     summary = ""
 
+    summary += "<{}>\n".format(issue.html_url)
     summary += "> **{}** - Issue **{}** at **{}**\n".format(issue.user.login, tags[2], tags[1])
     summary += "> Status - {}\n".format(issue.state)
     summary += "> \n"

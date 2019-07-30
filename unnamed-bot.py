@@ -17,6 +17,7 @@ import cmds.about
 import cmds.welcomemsg
 import cmds.zypper
 import cmds.bz
+import cmds.mageia
 
 config = configparser.ConfigParser()
 
@@ -57,6 +58,7 @@ class UnnamedClient(discord.Client):
                 cmds.welcomemsg = reload(cmds.welcomemsg)
                 cmds.zypper = reload(cmds.zypper)
                 cmds.bz = reload(cmds.bz)
+                cmds.mageia = reload(cmds.mageia)
                 try:
                     print("Initializing dnf...")
                     cmds.dnf.init_dnf(config)
@@ -67,6 +69,11 @@ class UnnamedClient(discord.Client):
                     cmds.zypper.init_dnf(config)
                 except:
                     print("Zypper error!")
+                try:
+                    print("Initializing mageia...")
+                    cmds.mageia.init_dnf(config)
+                except:
+                    print("Mageia error!")
                 await message.channel.send("Reloaded!")
                 await self.change_presence(status=discord.Status.online)
 
@@ -79,7 +86,12 @@ class UnnamedClient(discord.Client):
             await cmds.flatpak.handle_message(message)
 
         elif message.content.startswith(("dnf search ", "dnf se ")):
+            await message.channel.trigger_typing()
             await cmds.dnf.handle_message(message)
+
+        elif message.content.startswith(("dnf mageia-search ", "dnf mse ")):
+            await message.channel.trigger_typing()
+            await cmds.mageia.handle_message(message)
 
         elif message.content.startswith(("zypper search ", "zypper se ", "zyp se ", "zyp search ")):
             await message.channel.trigger_typing()
@@ -133,6 +145,11 @@ try:
     cmds.zypper.init_dnf(config)
 except:
     print("Zypper error!")
+try:
+    print("Initializing mageia...")
+    cmds.mageia.init_dnf(config)
+except:
+    print("Mageia error!")
 
 client = UnnamedClient()
 client.run(config['Discord']['Token'])

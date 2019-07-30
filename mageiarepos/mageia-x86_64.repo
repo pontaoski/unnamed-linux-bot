@@ -1,0 +1,9 @@
+[mageia-x86_64]
+name=Mageia 7 - x86_64
+#baseurl=https://mirrors.kernel.org/mageia/distrib/7/x86_64/media/core/release/
+#metalink=https://mirrors.mageia.org/metalink?distrib=mageia-7&arch=x86_64&section=core&repo=release
+mirrorlist=https://www.mageia.org/mirrorlist/?release=7&arch=x86_64&section=core&repo=release
+gpgcheck=0
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-Mageia
+fastestmirror=1
+enabled=1
