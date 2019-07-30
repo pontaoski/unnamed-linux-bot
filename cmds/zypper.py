@@ -38,10 +38,10 @@ def init_dnf(config: configparser.ConfigParser):
     global dnf_obj
     
     dnf_obj.conf.ignorearch = True
-    dnf_obj.conf.logdir = tempfile.mkdtemp(suffix="dnflog")
+    dnf_obj.conf.logdir = tempfile.mkdtemp(suffix="zypper-libdnf-logs")
     dnf_obj.conf.reposdir = config["Zypper"]["RepoPath"]
     dnf_obj.conf.keepcache = True
-    dnf_obj.conf.cachedir = tempfile.mkdtemp()
+    dnf_obj.conf.cachedir = tempfile.mkdtemp(suffix="zypper-libdnf-cache")
     
     dnf_obj.read_all_repos()
 

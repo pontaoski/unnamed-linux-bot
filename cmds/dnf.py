@@ -38,10 +38,10 @@ def init_dnf(config: configparser.ConfigParser):
     global fedora_dnf_obj
     
     fedora_dnf_obj.conf.ignorearch = True
-    fedora_dnf_obj.conf.logdir = tempfile.mkdtemp(suffix="dnflog")
+    fedora_dnf_obj.conf.logdir = tempfile.mkdtemp(suffix="fedora-dnf-log")
     fedora_dnf_obj.conf.reposdir = config["Dnf"]["RepoPath"]
     fedora_dnf_obj.conf.keepcache = True
-    fedora_dnf_obj.conf.cachedir = tempfile.mkdtemp()
+    fedora_dnf_obj.conf.cachedir = tempfile.mkdtemp(suffix="fedora-dnf-cache")
     
     fedora_dnf_obj.read_all_repos()
 
