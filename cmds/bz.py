@@ -6,19 +6,78 @@ import requests
 import bugzilla
 import libxml2
 import base64
+from libpagure import Pagure
+import gitlab
+from github import Github
 
 def split_bz(str):
     return str.split("#")
 
-async def bugzilla_message(api, tag, message):
-    split_str = split_bz(tag)
-    id = split_str[1]
+async def github_message(tag, message: discord.Message):
+    tags = split_bz(tag)
+    g = Github()
+    repo = g.get_repo(tags[1])
+    issue = repo.get_issue(number=int(tags[2]))
+    summary = ""
 
-    bzapi = bugzilla.Bugzilla(api)
+    summary += "> **{}** - Issue **{}** at **{}**\n".format(issue.user.login, tags[2], tags[1])
+    summary += "> Status - {}\n".format(issue.state)
+    summary += "> \n"
+    summary += "> {}".format(issue.title)
+
+    await message.channel.send(summary)
+
+async def gitlab_message(tag, message: discord.Message):
+    tags = split_bz(tag)
+    instance_url = "https://" + tags[1]
+    gl = gitlab.Gitlab(instance_url)
+    project = gl.projects.get(tags[2], lazy=True)
+    summary = ""
+    for i in project.issues.list():
+        if i.iid == int(tags[3]):
+            summary += "<{}>\n".format(i.web_url)
+            summary += "> **{}** ({}) - Issue **{}** at **{}**\n".format(i.author["name"], i.author["username"], i.iid, tags[2])
+            summary += "> Status - {}\n".format(i.state)
+            summary += "> \n"
+            summary += "> {}".format(i.title)
+            await message.channel.send(summary)
+    
+async def pagure_message(tag, message):
+    tags = split_bz(tag)
+    instance_url = "https://" + tags[1]
+    pg = Pagure(instance_url=instance_url,pagure_repository=tags[2])
+    issue = pg.issue_info(tags[3])
+    
+    summary = ""
+
+    summary += "> **{}** ({}) - Issue **{}** at **{}**\n".format(issue["user"]["fullname"], issue["user"]["name"], tags[3], tags[2])
+    summary += "> Status - **{}**\n".format(issue["status"])
+    summary += "> \n"
+    summary += "> {}".format(issue["title"])
+
+    await message.channel.send("{}/{}/issue/{}".format(instance_url, tags[2], tags[3]))
+    await message.channel.send(summary)
+
+async def bugzilla_message(api, tag, message, generic=False):
+    bzapi = None
+    if not generic:
+        bzapi = bugzilla.Bugzilla(api)
+        split_str = split_bz(tag)
+        id = split_str[1]
+    else:
+        split_str = split_bz(tag)
+        bzapi = bugzilla.Bugzilla(split_str[1])
+        id = split_str[2]
+
     bug = bzapi.getbug(int(id))
     summary = ""
 
-    bug_author_realname = bug.creator_detail["real_name"]
+    bug_author_realname = None
+    try:
+        bug_author_realname = bug.creator_detail["real_name"]
+    except:
+        bug_author_realname = None
+
     bug_author = bug.creator
     if bug_author_realname is not None:
         bug_author = "**{}** ({})".format(bug_author_realname, bug_author)
@@ -66,6 +125,26 @@ async def handle_message(message: discord.Message):
         for i in words:
             if "bsc#" in i:
                 await bugzilla_message("bugzilla.suse.com", i, message)
+
+    if "bz#" in message.content:
+        for i in words:
+            if "bz#" in i:
+                await bugzilla_message("generic", i, message, generic=True)
+
+    if "pgr#" in message.content:
+        for i in words:
+            if "pgr#" in i:
+                await pagure_message(i, message)
+    
+    if "gl#" in message.content:
+        for i in words:
+            if "gl#" in i:
+                await gitlab_message(i, message)
+        
+    if "gh#" in message.content:
+        for i in words:
+            if "gh#" in i:
+                await github_message(i, message)
 
     if "obssr#" in message.content:
         for i in words:
