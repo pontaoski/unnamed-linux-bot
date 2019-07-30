@@ -16,6 +16,7 @@ import cmds.ss
 import cmds.about
 import cmds.welcomemsg
 import cmds.zypper
+import cmds.bz
 
 config = configparser.ConfigParser()
 
@@ -55,6 +56,7 @@ class UnnamedClient(discord.Client):
                 cmds.about = reload(cmds.about)
                 cmds.welcomemsg = reload(cmds.welcomemsg)
                 cmds.zypper = reload(cmds.zypper)
+                cmds.bz = reload(cmds.bz)
                 try:
                     print("Initializing dnf...")
                     cmds.dnf.init_dnf(config)
@@ -107,6 +109,7 @@ class UnnamedClient(discord.Client):
             await cmds.welcomemsg.handle_message(message)
 
         await cmds.autoslowmode.handle_message(message)
+        await cmds.bz.handle_message(message)
 
 if path.exists("config.ini"):
     config.read("config.ini")
