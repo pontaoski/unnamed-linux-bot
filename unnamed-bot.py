@@ -55,10 +55,16 @@ class UnnamedClient(discord.Client):
                 cmds.about = reload(cmds.about)
                 cmds.welcomemsg = reload(cmds.welcomemsg)
                 cmds.zypper = reload(cmds.zypper)
-                await message.channel.send("Initializing zypper...")
-                cmds.zypper.init_dnf(config)
-                await message.channel.send("Initializing dnf...")
-                cmds.dnf.init_dnf(config)
+                try:
+                    print("Initializing dnf...")
+                    cmds.dnf.init_dnf(config)
+                except:
+                    print("Dnf error!")
+                try:
+                    print("Initializing zypper...")
+                    cmds.zypper.init_dnf(config)
+                except:
+                    print("Zypper error!")
                 await message.channel.send("Reloaded!")
                 await self.change_presence(status=discord.Status.online)
 
@@ -114,10 +120,16 @@ else:
     print("You have not configured this bot. Please use config.ini to configure this bot.")
     exit()
     
-print("Initializing dnf...")
-cmds.dnf.init_dnf(config)
-print("Initializing zypper...")
-cmds.zypper.init_dnf(config)
+try:
+    print("Initializing dnf...")
+    cmds.dnf.init_dnf(config)
+except:
+    print("Dnf error!")
+try:
+    print("Initializing zypper...")
+    cmds.zypper.init_dnf(config)
+except:
+    print("Zypper error!")
 
 client = UnnamedClient()
 client.run(config['Discord']['Token'])

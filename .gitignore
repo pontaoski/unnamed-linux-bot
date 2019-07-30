@@ -5,3 +5,5 @@ cache
 ss.db
 .kdev4
 unnamed-linux-bot.kdev4
+zypp/
+dnf/

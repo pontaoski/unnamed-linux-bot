@@ -6,3 +6,4 @@ baseurl=http://download.opensuse.org/tumbleweed/repo/oss/
 path=/
 type=rpm-md
 keeppackages=0
+gpgcheck=0

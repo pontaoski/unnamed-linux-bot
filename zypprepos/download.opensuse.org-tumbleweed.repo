@@ -6,3 +6,4 @@ baseurl=http://download.opensuse.org/update/tumbleweed/
 path=/
 type=rpm-md
 keeppackages=0
+gpgcheck=0

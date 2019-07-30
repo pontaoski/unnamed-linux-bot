@@ -1,7 +1,7 @@
 [fedora-modular]
 name=Fedora Modular 30 - x86_64
-metalink=https://mirrors.fedoraproject.org/metalink?repo=fedora-modular-30&arch=x86_64
-enabled=0
+metalink=https://mirrors.fedoraproject.org/metalink?repo=fedora-modular-29&arch=x86_64
+enabled=1
 #metadata_expire=7d
 repo_gpgcheck=0
 type=rpm
