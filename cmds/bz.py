@@ -9,9 +9,26 @@ import base64
 from libpagure import Pagure
 import gitlab
 from github import Github
+from phabricator import Phabricator
 
 def split_bz(str):
     return str.split("#")
+
+async def phabricator_message(tag, message: discord.Message):
+    tags = split_bz(tag)
+    phab = Phabricator()
+    revision = phab.api.differential.getrevision(revision_id=int(tags[1]))
+    author = phab.api.user.query(phids=[revision.authorPHID])[0]
+
+    summary = ""
+
+    summary += "<https://phabricator.kde.org/D{}>\n".format(tags[1])
+    summary += "> **{}** ({}) - D{}\n".format(author["realName"], author["userName"], tags[1])
+    summary += "> Status - {}\n".format(revision.statusName)
+    summary += "> \n"
+    summary += "> {}".format(revision.title)
+
+    await message.channel.send(summary)
 
 async def github_message(tag, message: discord.Message):
     tags = split_bz(tag)
@@ -146,6 +163,11 @@ async def handle_message(message: discord.Message):
         for i in words:
             if "gh#" in i:
                 await github_message(i, message)
+
+    if "phabd#" in message.content:
+        for i in words:
+            if "phabd#" in i:
+                await phabricator_message(i, message)
 
     if "obssr#" in message.content:
         for i in words:
