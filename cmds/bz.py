@@ -164,9 +164,9 @@ async def handle_message(message: discord.Message):
             if "gh#" in i:
                 await github_message(i, message)
 
-    if "phabd#" in message.content:
+    if "kded#" in message.content:
         for i in words:
-            if "phabd#" in i:
+            if "kded#" in i:
                 await phabricator_message(i, message)
 
     if "obssr#" in message.content:
