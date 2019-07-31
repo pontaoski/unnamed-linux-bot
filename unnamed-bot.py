@@ -115,7 +115,7 @@ class UnnamedClient(discord.Client):
             await message.channel.send("Not enough arguments!\nSee `sudo help` for how to use this command.")
         
         elif message.content.startswith("sudo help"):
-            await message.channel.send("See help at https://unnamed-linux-community.github.io/.")
+            await message.channel.send("See help at https://linux-cafe.github.io/.")
         
         elif message.content.startswith("sudo welcomemessage"):
             await cmds.welcomemsg.handle_message(message)
