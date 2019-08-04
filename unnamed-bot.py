@@ -47,7 +47,13 @@ class UnnamedClient(discord.Client):
     async def on_message(self, message):
         global config
         if message.author == self.user:
+            logfile = open(config['Discord']['MsgLogPath'] + "/" + str(message.channel.id) + ".log", "a+")
+            logfile.write("{} ({}) at {}\n".format(message.author.display_name, str(message.author.id), message.created_at.strftime("%Y-%m-%d %H:%M:%S")))
+            logfile.write(message.clean_content + "\n")
+            for i in message.embeds:
+                logfile.write(str(i.to_dict()) + "\n\n")
             return
+
         elif message.content.startswith("sudo reload"):
             if message.author.guild_permissions.administrator:
                 await self.change_presence(status=discord.Status.dnd)
@@ -130,6 +136,11 @@ class UnnamedClient(discord.Client):
 
         await cmds.autoslowmode.handle_message(message)
         await cmds.bz.handle_message(message)
+        logfile = open(config['Discord']['MsgLogPath'] + "/" + str(message.channel.id) + ".log", "a+")
+        logfile.write("{} ({}) at {}\n".format(message.author.display_name, str(message.author.id), message.created_at.strftime("%Y-%m-%d %H:%M:%S")))
+        for i in message.embeds:
+            logfile.write(str(i.to_dict()) + "\n\n")
+        logfile.write(message.clean_content + "\n\n")
 
 if path.exists("config.ini"):
     config.read("config.ini")
