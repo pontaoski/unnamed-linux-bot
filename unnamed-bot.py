@@ -18,6 +18,7 @@ import cmds.welcomemsg
 import cmds.zypper
 import cmds.bz
 import cmds.mageia
+import cmds.chat
 
 config = configparser.ConfigParser()
 
@@ -31,10 +32,13 @@ class UnnamedClient(discord.Client):
         # await message.add_reaction("💛")
         # await message.add_reaction("💙")
 
-    async def on_reaction_add(self, reaction, user):
+    async def on_raw_reaction_add(self, raw):
         channel = self.get_channel(int(config['Discord']['WelcomeChannel']))
-        if (reaction.message.channel == channel):
-            if(reaction.emoji == "💛"):
+        reaction_channel = self.get_channel(raw.channel_id)
+        guild = self.get_guild(raw.guild_id)
+        user = guild.get_member(raw.user_id)
+        if (channel == reaction_channel):
+            if(raw.emoji.name == "💛"):
                 await user.add_roles(channel.guild.get_role(int(config['Discord']['WelcomeUserRole'])))
 
     async def on_ready(self):
@@ -59,6 +63,7 @@ class UnnamedClient(discord.Client):
                 cmds.zypper = reload(cmds.zypper)
                 cmds.bz = reload(cmds.bz)
                 cmds.mageia = reload(cmds.mageia)
+                cmds.chat = reload(cmds.chat)
                 try:
                     print("Initializing dnf...")
                     cmds.dnf.init_dnf(config)
@@ -113,6 +118,9 @@ class UnnamedClient(discord.Client):
             await cmds.ss.handle_message(message)
         elif message.content.startswith("sudo ss"):
             await message.channel.send("Not enough arguments!\nSee `sudo help` for how to use this command.")
+
+        elif message.content.startswith("sudo chat "):
+            await cmds.chat.handle_message(message)
         
         elif message.content.startswith("sudo help"):
             await message.channel.send("See help at https://linux-cafe.github.io/.")
