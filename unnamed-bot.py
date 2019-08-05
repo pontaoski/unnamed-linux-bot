@@ -19,6 +19,7 @@ import cmds.zypper
 import cmds.bz
 import cmds.mageia
 import cmds.chat
+import cmds.embed
 
 config = configparser.ConfigParser()
 
@@ -70,6 +71,7 @@ class UnnamedClient(discord.Client):
                 cmds.bz = reload(cmds.bz)
                 cmds.mageia = reload(cmds.mageia)
                 cmds.chat = reload(cmds.chat)
+                cmds.embed = reload(cmds.embed)
                 try:
                     print("Initializing dnf...")
                     cmds.dnf.init_dnf(config)
@@ -130,6 +132,9 @@ class UnnamedClient(discord.Client):
         
         elif message.content.startswith("sudo help"):
             await message.channel.send("See help at https://linux-cafe.github.io/.")
+
+        elif message.content.startswith("sudo embed "):
+            await cmds.embed.handle_message(message)
         
         elif message.content.startswith("sudo welcomemessage"):
             await cmds.welcomemsg.handle_message(message)
