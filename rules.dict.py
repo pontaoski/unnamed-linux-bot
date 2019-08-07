@@ -43,6 +43,37 @@
     'color': 16771584,
     'type': 'rich',
     'title': 'Linux Café Rules',
-    'thumbnail': 'https://cdn.discordapp.com/icons/585607491023273989/33a5adf671eb0430d8c8cb6e43907154.png?size=128',
-    'description': 'Check out these cool servers that have partnered with us! If you\'re interested in partnering, ping pontaos or someone with the Wheel role.'
+    'description': 'Read these rules to know how not to break them.'
+}
+
+{
+    'color': 16771584,
+    'type': 'rich',
+    'description': '[**Roles for channels and distros**](https://linux-cafe.github.io/roles.html)'
+}
+
+{
+    'color': 16771584,
+    'type': 'rich',
+    'description': '[**Bot commands**](https://linux-cafe.github.io/commands.html)'
+}
+{
+    'color': 16771584,
+    'type': 'rich',
+    'title': 'React to these embeds for roles!'
+}
+{
+    'color': 16771584,
+    'type': 'rich',
+    'title': 'Regular (No Color) Distro Roles'
+}
+{
+    'color': 16771584,
+    'type': 'rich',
+    'title': 'Favorite (Color) Distro Roles'
+}
+{
+    'color': 16771584,
+    'type': 'rich',
+    'title': 'Channel Roles'
 }

@@ -20,6 +20,7 @@ import cmds.bz
 import cmds.mageia
 import cmds.chat
 import cmds.embed
+import cmds.rolemenu
 
 config = configparser.ConfigParser()
 
@@ -34,6 +35,7 @@ class UnnamedClient(discord.Client):
         # await message.add_reaction("💙")
 
     async def on_raw_reaction_add(self, raw):
+        await cmds.rolemenu.handle_reaction(self, raw)
         channel = self.get_channel(int(config['Discord']['WelcomeChannel']))
         reaction_channel = self.get_channel(raw.channel_id)
         guild = self.get_guild(raw.guild_id)
@@ -72,6 +74,7 @@ class UnnamedClient(discord.Client):
                 cmds.mageia = reload(cmds.mageia)
                 cmds.chat = reload(cmds.chat)
                 cmds.embed = reload(cmds.embed)
+                cmds.rolemenu = reload(cmds.rolemenu)
                 try:
                     print("Initializing dnf...")
                     cmds.dnf.init_dnf(config)
@@ -138,11 +141,14 @@ class UnnamedClient(discord.Client):
         
         elif message.content.startswith("sudo welcomemessage"):
             await cmds.welcomemsg.handle_message(message)
+        
+        elif message.content.startswith("rolemenu -c "):
+            await cmds.rolemenu.handle_message(message)
 
         await cmds.autoslowmode.handle_message(message)
         await cmds.bz.handle_message(message)
         logfile = open(config['Discord']['MsgLogPath'] + "/" + str(message.channel.id) + ".log", "a+")
-        logfile.write("{} ({}) at {}\n".format(message.author.display_name, str(message.author.id), message.created_at.strftime("%Y-%m-%d %H:%M:%S")))
+        logfile.write("{} ({}) at {} - ID {}\n".format(message.author.display_name, str(message.author.id), message.created_at.strftime("%Y-%m-%d %H:%M:%S"), str(message.id)))
         for i in message.embeds:
             logfile.write(str(i.to_dict()) + "\n\n")
         logfile.write(message.clean_content + "\n\n")

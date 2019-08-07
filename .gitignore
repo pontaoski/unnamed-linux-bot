@@ -3,6 +3,7 @@ config.ini
 cmds/__pycache__
 cache
 ss.db
+roles.db
 .kdev4
 unnamed-linux-bot.kdev4
 zypp/
