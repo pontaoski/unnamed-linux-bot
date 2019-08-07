@@ -17,3 +17,11 @@ class Timer:
 def get_content(string, trim_words=2):
     array = string.split()
     return " ".join(array[trim_words:])
+
+def default(get, default):
+    if get is False:
+        return default
+    elif get is None:
+        return default
+    else:
+        return get

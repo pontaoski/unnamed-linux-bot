@@ -4,6 +4,7 @@ cmds/__pycache__
 cache
 ss.db
 roles.db
+profile.db
 .kdev4
 unnamed-linux-bot.kdev4
 zypp/

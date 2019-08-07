@@ -21,6 +21,7 @@ import cmds.mageia
 import cmds.chat
 import cmds.embed
 import cmds.rolemenu
+import cmds.profile
 
 config = configparser.ConfigParser()
 
@@ -75,6 +76,7 @@ class UnnamedClient(discord.Client):
                 cmds.chat = reload(cmds.chat)
                 cmds.embed = reload(cmds.embed)
                 cmds.rolemenu = reload(cmds.rolemenu)
+                cmds.profile = reload(cmds.profile)
                 try:
                     print("Initializing dnf...")
                     cmds.dnf.init_dnf(config)
@@ -144,6 +146,9 @@ class UnnamedClient(discord.Client):
         
         elif message.content.startswith("rolemenu -c "):
             await cmds.rolemenu.handle_message(message)
+
+        elif message.content.startswith("sudo profile"):
+            await cmds.profile.handle_message(message)
 
         await cmds.autoslowmode.handle_message(message)
         await cmds.bz.handle_message(message)
