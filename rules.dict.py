@@ -77,3 +77,8 @@
     'type': 'rich',
     'title': 'Channel Roles'
 }
+{
+    'color': 16771584,
+    'type': 'rich',
+    'title': 'Announcement Role'
+}
