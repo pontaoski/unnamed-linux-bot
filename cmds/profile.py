@@ -14,104 +14,58 @@ async def handle_message(message: discord.Message):
     sender = message.author
     sender_id = sender.id
 
+    helpmsg = ""
+    helpmsg += "```dsconfig\n"
+    helpmsg += "# Syntax: sudo profile --flag value\n"
+    helpmsg += " ( --user | -u )\n"
+    helpmsg += " \tGet the user specified.\n"
+    helpmsg += " ( --set-desktop-environment | -w )\n"
+    helpmsg += " \tSet your desktop environment or window manager.\n"
+    helpmsg += " ( --set-distro | -d )\n"
+    helpmsg += " \tSet your distro.\n"
+    helpmsg += " ( --set-shell | -s )\n"
+    helpmsg += " \tSet your shell.\n"
+    helpmsg += " ( --set-editor | -e )\n"
+    helpmsg += " \tSet your editor.\n"
+    helpmsg += " ( --set-languages | -p )\n"
+    helpmsg += " \tSet your programming languages.\n"
+    helpmsg += " ( --set-blurb | -b )\n"
+    helpmsg += " \tSet your programming languages.\n"
+    helpmsg += "```"
+
     if not query_array:
         await message.channel.send("Not enough arguments!")
-        helpmsg = ""
-        helpmsg += "```dsconfig\n"
-        helpmsg += "# Syntax: sudo profile --flag value\n"
-        helpmsg += " ( --user | -u )\n"
-        helpmsg += " \tGet the user specified.\n"
-        helpmsg += " ( --set-desktop-environment | -D )\n"
-        helpmsg += " \tSet your desktop environment or window manager.\n"
-        helpmsg += " ( --set-distro | -d )\n"
-        helpmsg += " \tSet your distro.\n"
-        helpmsg += " ( --set-shell | -s )\n"
-        helpmsg += " \tSet your shell.\n"
-        helpmsg += " ( --set-editor | -e )\n"
-        helpmsg += " \tSet your editor.\n"
-        helpmsg += " ( --set-languages | -p )\n"
-        helpmsg += " \tSet your programming languages.\n"
-        helpmsg += " ( --set-blurb | -b )\n"
-        helpmsg += " \tSet your programming languages.\n"
-        helpmsg += "```"
         await message.channel.send(helpmsg)
+        return
 
     while query_array:
-        if query_array[0] == "-D" or query_array[0] == "--set-desktop-environment":
-            query_array.pop(0)
-            value = ""
-            for index, argvalue in enumerate(query_array,start=0):
-                if not "-" in argvalue:
-                    value += "{} ".format(argvalue)
-                else:
-                    break
-
-            if not query_array:
-                continue
-            args_dict["desktop"] = value.rstrip()
-        if query_array[0] == "-d" or query_array[0] == "--set-distro":
-            query_array.pop(0)
-            value = ""
-            for index, argvalue in enumerate(query_array,start=0):
-                if not "-" in argvalue:
-                    value += "{} ".format(argvalue)
-
-            if not query_array:
-                continue
-            args_dict["distro"] = value.rstrip()
-        if query_array[0] == "-s" or query_array[0] == "--set-shell":
-            query_array.pop(0)
-            value = ""
-            for index, argvalue in enumerate(query_array,start=0):
-                if not "-" in argvalue:
-                    value += "{} ".format(argvalue)
-
-            if not query_array:
-                continue
-            args_dict["shell"] = value.rstrip()
-        if query_array[0] == "-e" or query_array[0] == "--set-editor":
-            query_array.pop(0)
-            value = ""
-            for index, argvalue in enumerate(query_array,start=0):
-                if not "-" in argvalue:
-                    value += "{} ".format(argvalue)
-
-            if not query_array:
-                continue
-            args_dict["editor"] = value.rstrip()
-        if query_array[0] == "-p" or query_array[0] == "--set-languages":
-            query_array.pop(0)
-            value = ""
-            for index, argvalue in enumerate(query_array,start=0):
-                if not "-" in argvalue:
-                    value += "{} ".format(argvalue)
-
-            if not query_array:
-                continue
-            args_dict["langs"] = value.rstrip()
-        if query_array[0] == "-b" or query_array[0] == "--set-blurb":
-            query_array.pop(0)
-            value = ""
-            for index, argvalue in enumerate(query_array,start=0):
-                if not "-" in argvalue:
-                    value += "{} ".format(argvalue)
-
-            if not query_array:
-                continue
-            args_dict["blurb"] = value.rstrip()
-        if query_array[0] == "-u" or query_array[0] == "--user":
-            query_array.pop(0)
-            value = ""
-            for index, argvalue in enumerate(query_array,start=0):
-                if not "-" in argvalue:
-                    value += "{} ".format(argvalue)
-
-            if not query_array:
-                continue
-            args_dict["user"] = value.rstrip()
+        distro_query = cmds.cmdutils.get_flag_value("-w", "--set-desktop-environment", query_array)
+        if distro_query is not None:
+            args_dict["desktop"] = distro_query
+        distro_query = cmds.cmdutils.get_flag_value("-d", "--set-distro", query_array)
+        if distro_query is not None:
+            args_dict["distro"] = distro_query
+        shell_query = cmds.cmdutils.get_flag_value("-s", "--set-shell", query_array)
+        if shell_query is not None:
+            args_dict["shell"] = shell_query
+        editor_query = cmds.cmdutils.get_flag_value("-e", "--set-editor", query_array)
+        if editor_query is not None:
+            args_dict["editor"] = editor_query
+        langs_query = cmds.cmdutils.get_flag_value("-p", "--set-languages", query_array)
+        if langs_query is not None:
+            args_dict["langs"] = langs_query
+        blurb_query = cmds.cmdutils.get_flag_value("-b", "--set-blurb", query_array)
+        if blurb_query is not None:
+            args_dict["blurb"] = blurb_query
+        user_query = cmds.cmdutils.get_flag_value("-u", "--user", query_array)
+        if user_query is not None:
+            args_dict["user"] = user_query
         
         query_array.pop(0)
             
+    if args_dict == {}:
+        await message.channel.send("Invalid arguments!")
+        await message.channel.send(helpmsg)
     profile_updated = None
     if "desktop" in args_dict.keys():
         db.set(str(sender_id) + "_de", args_dict["desktop"])

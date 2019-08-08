@@ -37,3 +37,16 @@ def get_user_closest_to_name(guild: discord.Guild, name: str):
     if closest is None:
         return None
     return guild.get_member_named(closest[0])
+
+def get_flag_value(short: str, long: str, query_array):
+    if query_array[0] == short or query_array[0] == long:
+        query_array.pop(0)
+        value = ""
+        for index, argvalue in enumerate(query_array,start=0):
+            if not "-" in argvalue:
+                value += "{} ".format(argvalue)
+            else:
+                break
+        return str(value.rstrip())
+    else:
+        return None
