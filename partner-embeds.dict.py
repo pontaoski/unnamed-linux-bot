@@ -19,6 +19,10 @@
         'value': '● [The Linux Community](https://discord.gg/uuKtzCw)\n● [Linux & Technology Kingdom](https://discord.gg/GU88ak5)\n',
         'name': 'General Discords',
         'inline': False
+    },{
+        'value': '● [Linux Gaming](https://discord.gg/linuxgaming)\n',
+        'name': 'Categorical Discords',
+        'inline': False
     }],
     'color': 16771584,
     'type': 'rich',
