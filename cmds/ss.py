@@ -90,7 +90,7 @@ async def handle_message(message):
         await message.channel.send("List of screenshots: https://write.as/" + post_id + ".md")
 
     else:
-        mentioned_member = message.guild.get_member_named(query)
+        mentioned_member = cmds.cmdutils.get_user_closest_to_name(message.guild, query)
         try:
             mentioned_member = message.mentions[0]
         except IndexError:

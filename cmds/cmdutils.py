@@ -1,5 +1,7 @@
 #!/usr/bin/env python
+import discord
 import asyncio
+from fuzzywuzzy import process
 
 class Timer:
     def __init__(self, timeout, callback):
@@ -25,3 +27,13 @@ def default(get, default):
         return default
     else:
         return get
+
+def get_user_closest_to_name(guild: discord.Guild, name: str):
+    members = guild.members
+    member_names = []
+    for i in members:
+        member_names.append(i.display_name)
+    closest = process.extractOne(name, member_names)
+    if closest is None:
+        return None
+    return guild.get_member_named(closest[0])

@@ -136,7 +136,7 @@ async def handle_message(message: discord.Message):
         await message.channel.send("Profile updated!")
 
     if "user" in args_dict.keys():
-        mentioned_member = message.guild.get_member_named(args_dict["user"])
+        mentioned_member = cmds.cmdutils.get_user_closest_to_name(message.guild, args_dict["user"])
         try:
             mentioned_member = message.mentions[0]
         except IndexError:
