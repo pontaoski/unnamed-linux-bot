@@ -15,7 +15,7 @@ async def handle_message(message: discord.Message):
     if (message.author.bot):
         return
 
-    if message.attachments is None:
+    if message.attachments:
         return
 
     if slowdict.get(author+"-lastmessagecontent", None) == message.content:

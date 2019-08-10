@@ -30,7 +30,7 @@ async def handle_message(message: discord.Message):
     helpmsg += " ( --set-languages | -p )\n"
     helpmsg += " \tSet your programming languages.\n"
     helpmsg += " ( --set-blurb | -b )\n"
-    helpmsg += " \tSet your programming languages.\n"
+    helpmsg += " \tSet your profile blurb.\n"
     helpmsg += "```"
 
     if not query_array:
