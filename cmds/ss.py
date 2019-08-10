@@ -9,6 +9,8 @@ async def handle_message(message):
 
     query = cmds.cmdutils.get_content(message.content)
     query_array = query.split()
+    if len(query) == 0:
+        await message.channel.send("Not enough args!")
 
     sender = message.author
     sender_id = sender.id

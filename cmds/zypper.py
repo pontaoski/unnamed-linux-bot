@@ -17,6 +17,8 @@ async def handle_message(message: discord.Message):
     global dnf_obj
 
     query = cmds.cmdutils.get_content(message.content)
+    if len(query) == 0:
+        await message.channel.send("Not enough args!")
 
     dnf_query = dnf_obj.sack.query()
     available_packages = dnf_query.available()

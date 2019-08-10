@@ -7,7 +7,7 @@ async def handle_message(message):
     cmd = cmds.cmdutils.get_content(message.content)
     
     if len(cmd) == 0:
-        message.channel.send("Not enough args!")
+        await message.channel.send("Not enough args!")
 
     urlcmd = urllib.parse.quote(cmd)
 

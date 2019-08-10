@@ -24,16 +24,35 @@ import cmds.rolemenu
 import cmds.profile
 
 config = configparser.ConfigParser()
+commands = {
+    "sudo about":           cmds.about.handle_message,
+    "bash -c":              cmds.bash.handle_message,
+    "sudo chat":            cmds.chat.handle_message,
+    "dnf se":               cmds.dnf.handle_message,
+    "dnf search":           cmds.dnf.handle_message,
+    "flatpak se":           cmds.flatpak.handle_message,
+    "flatpak search":       cmds.flatpak.handle_message,
+    "sudo info":            cmds.info.handle_message,
+    "dnf mse":              cmds.mageia.handle_message,
+    "dnf mageia-search":    cmds.mageia.handle_message,
+    "sudo profile":         cmds.profile.handle_message,
+    "rolemenu -c":          cmds.rolemenu.handle_message,
+    "sudo ss":              cmds.ss.handle_message,
+    "sudo welcomemessage":  cmds.welcomemsg.handle_message,
+    "zypper se":            cmds.zypper.handle_message,
+    "zypper search":        cmds.zypper.handle_message,
+    "zyp se":               cmds.zypper.handle_message,
+    "zyp search":           cmds.zypper.handle_message
+}
 
 class UnnamedClient(discord.Client):
-
-    # async def on_member_join(self, member):
-        # channel = self.get_channel(int(config['Discord']['WelcomeChannel']))
-        # message = await channel.send("Welcome to the server, <@" + str(member.id) + ">! \nPlease read our rules at https://linux-cafe.github.io/rules.html.\nWhen you have read them, click the heart that's the same color as the website's top bar.")
-        # await message.add_reaction("💚")
-        # await message.add_reaction("❤")
-        # await message.add_reaction("💛")
-        # await message.add_reaction("💙")
+            
+    async def handle_command_message(self, message: discord.Message):
+        global commands
+        command = ' '.join(message.content.split()[:2])
+        func = commands.get(command, None)
+        if func is not None:
+            await func(message)
 
     async def on_raw_reaction_add(self, raw):
         await cmds.rolemenu.handle_reaction(self, raw)
@@ -58,97 +77,7 @@ class UnnamedClient(discord.Client):
                 logfile.write(str(i.to_dict()) + "\n\n")
             return
 
-        elif message.content.startswith("sudo reload"):
-            if message.author.guild_permissions.administrator:
-                await self.change_presence(status=discord.Status.dnd)
-                await message.channel.send("Reloading...")
-                cmds.bash = reload(cmds.bash)
-                cmds.dnf = reload(cmds.dnf)
-                cmds.flatpak = reload(cmds.flatpak)
-                cmds.autoslowmode = reload(cmds.autoslowmode)
-                cmds.info = reload(cmds.info)
-                cmds.ss = reload(cmds.ss)
-                cmds.about = reload(cmds.about)
-                cmds.welcomemsg = reload(cmds.welcomemsg)
-                cmds.zypper = reload(cmds.zypper)
-                cmds.bz = reload(cmds.bz)
-                cmds.mageia = reload(cmds.mageia)
-                cmds.chat = reload(cmds.chat)
-                cmds.embed = reload(cmds.embed)
-                cmds.rolemenu = reload(cmds.rolemenu)
-                cmds.profile = reload(cmds.profile)
-                try:
-                    print("Initializing dnf...")
-                    cmds.dnf.init_dnf(config)
-                except:
-                    print("Dnf error!")
-                try:
-                    print("Initializing zypper...")
-                    cmds.zypper.init_dnf(config)
-                except:
-                    print("Zypper error!")
-                try:
-                    print("Initializing mageia...")
-                    cmds.mageia.init_dnf(config)
-                except:
-                    print("Mageia error!")
-                await message.channel.send("Reloaded!")
-                await self.change_presence(status=discord.Status.online)
-
-        elif message.content.startswith("sudo eval "):
-            if message.author.guild_permissions.administrator:
-                cmd = message.content[10:]
-                exec(cmd)
-
-        elif message.content.startswith("flatpak search"):
-            await cmds.flatpak.handle_message(message)
-
-        elif message.content.startswith(("dnf search ", "dnf se ")):
-            await message.channel.trigger_typing()
-            await cmds.dnf.handle_message(message)
-
-        elif message.content.startswith(("dnf mageia-search ", "dnf mse ")):
-            await message.channel.trigger_typing()
-            await cmds.mageia.handle_message(message)
-
-        elif message.content.startswith(("zypper search ", "zypper se ", "zyp se ", "zyp search ")):
-            await message.channel.trigger_typing()
-            await cmds.zypper.handle_message(message)
-
-        elif message.content.startswith("bash -c "):
-            await message.channel.trigger_typing()
-            await cmds.bash.handle_message(message)
-
-        elif message.content.startswith("sudo info "):
-            await cmds.info.handle_message(message)
-        elif message.content.startswith("sudo info"):
-            await message.channel.send("Not enough arguments!\nUsage: `sudo info <query>`")
-
-        elif message.content.startswith("sudo about"):
-            await cmds.about.handle_message(message)
-
-        elif message.content.startswith("sudo ss "):
-            await cmds.ss.handle_message(message)
-        elif message.content.startswith("sudo ss"):
-            await message.channel.send("Not enough arguments!\nSee `sudo help` for how to use this command.")
-
-        elif message.content.startswith("sudo chat "):
-            await cmds.chat.handle_message(message)
-        
-        elif message.content.startswith("sudo help"):
-            await message.channel.send("See help at https://linux-cafe.github.io/.")
-
-        elif message.content.startswith("sudo embed "):
-            await cmds.embed.handle_message(message)
-        
-        elif message.content.startswith("sudo welcomemessage"):
-            await cmds.welcomemsg.handle_message(message)
-        
-        elif message.content.startswith("rolemenu -c "):
-            await cmds.rolemenu.handle_message(message)
-
-        elif message.content.startswith("sudo profile"):
-            await cmds.profile.handle_message(message)
+        await self.handle_command_message(message)
 
         await cmds.autoslowmode.handle_message(message)
         await cmds.bz.handle_message(message)

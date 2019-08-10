@@ -8,6 +8,8 @@ import json
 # 'dnf search query'
 async def handle_message(message):
     query = cmds.cmdutils.get_content(message.content)
+    if len(query) == 0:
+        await message.channel.send("Not enough args!")
     urlquery = urllib.parse.quote(query)
     await message.channel.trigger_typing()
 

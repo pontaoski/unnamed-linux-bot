@@ -11,6 +11,8 @@ from pathlib import Path
 # flatpak search 
 async def handle_message(message):
     query = cmds.cmdutils.get_content(message.content)
+    if len(query) == 0:
+        await message.channel.send("Not enough args!")
     query_casefold = query.casefold()
     
     update_required = True
