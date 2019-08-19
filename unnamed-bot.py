@@ -22,27 +22,23 @@ import cmds.chat
 import cmds.embed
 import cmds.rolemenu
 import cmds.profile
+import cmds.permissions
 
 config = configparser.ConfigParser()
 commands = {
-    "sudo about":           cmds.about.handle_message,
-    "bash -c":              cmds.bash.handle_message,
-    "sudo chat":            cmds.chat.handle_message,
-    "dnf se":               cmds.dnf.handle_message,
-    "dnf search":           cmds.dnf.handle_message,
-    "flatpak se":           cmds.flatpak.handle_message,
-    "flatpak search":       cmds.flatpak.handle_message,
-    "sudo info":            cmds.info.handle_message,
-    "dnf mse":              cmds.mageia.handle_message,
-    "dnf mageia-search":    cmds.mageia.handle_message,
-    "sudo profile":         cmds.profile.handle_message,
-    "rolemenu -c":          cmds.rolemenu.handle_message,
-    "sudo ss":              cmds.ss.handle_message,
-    "sudo welcomemessage":  cmds.welcomemsg.handle_message,
-    "zypper se":            cmds.zypper.handle_message,
-    "zypper search":        cmds.zypper.handle_message,
-    "zyp se":               cmds.zypper.handle_message,
-    "zyp search":           cmds.zypper.handle_message
+    "sudo about":                                                           cmds.about.handle_message,
+    "bash -c":                                                              cmds.bash.handle_message,
+    "sudo chat":                                                            cmds.chat.handle_message,
+    **dict.fromkeys(['dnf search', 'dnf se'],                               cmds.dnf.handle_message),
+    **dict.fromkeys(['flatpak search', 'flatpak se'],                       cmds.flatpak.handle_message),
+    "sudo info":                                                            cmds.info.handle_message,
+    **dict.fromkeys(["dnf mageia-search", "dnf mse"],                       cmds.mageia.handle_message),
+    "sudo profile":                                                         cmds.profile.handle_message,
+    "rolemenu -c":                                                          cmds.rolemenu.handle_message,
+    "sudo ss":                                                              cmds.ss.handle_message,
+    "sudo welcomemessage":                                                  cmds.welcomemsg.handle_message,
+    **dict.fromkeys(["zypper search", "zypper se", "zyp search", "zyp se"], cmds.zypper.handle_message),
+    "sudo perm":                                                            cmds.permissions.handle_message
 }
 
 class UnnamedClient(discord.Client):
@@ -51,6 +47,9 @@ class UnnamedClient(discord.Client):
         global commands
         command = ' '.join(message.content.split()[:2])
         func = commands.get(command, None)
+        if command == "sudo reload":
+            cmds.permissions = reload(cmds.permissions)
+
         if func is not None:
             await func(message)
 

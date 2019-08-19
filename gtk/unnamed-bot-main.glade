@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Generated with glade 3.22.1 -->
+<interface>
+  <requires lib="gtk+" version="3.20"/>
+  <requires lib="vte-2.91" version="0.56"/>
+  <object class="GtkWindow" id="MainWindow">
+    <property name="can_focus">False</property>
+    <signal name="destroy" handler="quit" swapped="no"/>
+    <child type="titlebar">
+      <object class="GtkHeaderBar">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="title" translatable="yes">Unnamed Bot</property>
+        <property name="show_close_button">True</property>
+        <property name="decoration_layout">close:</property>
+        <child>
+          <object class="GtkButton" id="stop">
+            <property name="label" translatable="yes">Stop</property>
+            <property name="visible">True</property>
+            <property name="sensitive">False</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <signal name="clicked" handler="stop" swapped="no"/>
+          </object>
+          <packing>
+            <property name="pack_type">end</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton" id="start">
+            <property name="label" translatable="yes">Start</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <signal name="clicked" handler="start" swapped="no"/>
+          </object>
+          <packing>
+            <property name="pack_type">end</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="VteTerminal" id="terminal">
+        <property name="visible">True</property>
+        <property name="can_focus">True</property>
+        <property name="hscroll_policy">natural</property>
+        <property name="vscroll_policy">natural</property>
+        <property name="allow_hyperlink">True</property>
+        <property name="audible_bell">False</property>
+        <property name="encoding">UTF-8</property>
+        <property name="scroll_on_keystroke">True</property>
+        <property name="scroll_on_output">False</property>
+      </object>
+    </child>
+  </object>
+</interface>
