@@ -12,10 +12,6 @@ async def handle_message(message: discord.Message):
     
     req = requests.get("https://archlinux.org/packages/search/json/?q={}&repo=Community&repo=Core&repo=Extra&repo=Multilib".format(urllib.parse.quote(query, safe='')))
     json = req.json()
-
-    for i in json["results"]:
-        print(i["pkgname"])
-        print(i["pkgdesc"])
     
     pkgs = []
 
