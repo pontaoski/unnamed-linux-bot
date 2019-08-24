@@ -82,3 +82,25 @@
     'type': 'rich',
     'title': 'Announcement Role'
 }
+{
+    'color': 4042473,
+    'type': 'rich',
+    'title': 'Welcome!',
+    'description': 'To join, please click the KDE logo.'
+}
+{
+    'color': 4042473,
+    'type': 'rich',
+    'title': 'Roles',
+    'description': '📧 - Mail\n🎵 - Audio Channels'
+}
+{
+    'color': 4042473,
+    'type': 'rich',
+    'title': 'If you have a KDE developer account, please contact staff to recieve a special role!'
+}
+{
+    'color': 16771584,
+    'type': 'rich',
+    'title': 'Please note that you can only favorite one distro, and you need the uncolored role before you can get the colored role.'
+}

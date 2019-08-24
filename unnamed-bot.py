@@ -23,6 +23,7 @@ import cmds.embed
 import cmds.rolemenu
 import cmds.profile
 import cmds.permissions
+import cmds.pacman
 
 config = configparser.ConfigParser()
 commands = {
@@ -38,7 +39,10 @@ commands = {
     "sudo ss":                                                              cmds.ss.handle_message,
     "sudo welcomemessage":                                                  cmds.welcomemsg.handle_message,
     **dict.fromkeys(["zypper search", "zypper se", "zyp search", "zyp se"], cmds.zypper.handle_message),
-    "sudo perm":                                                            cmds.permissions.handle_message
+    "sudo perm":                                                            cmds.permissions.handle_message,
+    "sudo embed":                                                           cmds.embed.handle_message,
+    "sudo help":                                                            cmds.about.handle_help_message,
+    "pacman -Ss":                                                           cmds.pacman.handle_message
 }
 
 class UnnamedClient(discord.Client):
