@@ -104,3 +104,8 @@
     'type': 'rich',
     'title': 'Please note that you can only favorite one distro, and you need the uncolored role before you can get the colored role.'
 }
+{
+    'color': 16771584,
+    'type': 'rich',
+    'title': 'If you are affilated with an open source project (i.e. a KDE Developer, openSUSE Member, or employee of an open source company), please contact staff to recieve a special role.'
+}
