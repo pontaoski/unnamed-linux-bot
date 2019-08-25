@@ -24,5 +24,24 @@ async def handle_message(message: discord.Message):
     except:
         await message.channel.send("There was an error or your result did not return anything!")
 
-    msg = ""
-    msg += "\n"
+async def handle_aur_message(message: discord.Message):
+    await message.channel.trigger_typing()
+    query = cmds.cmdutils.get_content(message.content)
+    if len(query) == 0:
+        await message.channel.send("Not enough args!")
+    
+    req = requests.get("https://aur.archlinux.org/rpc/?v=5&type=info&arg={}".format(urllib.parse.quote(query, safe='')))
+    json = req.json()
+
+    print(json)
+    
+    pkgs = []
+
+    for pkg in json["results"]:
+        pkgs.append(" ‣ `{}` - {}\n".format(pkg["Name"], pkg["Description"]))
+
+    try:
+        await message.channel.send("**{} search results for `{}` in the AUR**\n\n".format(len(pkgs), query))
+        await message.channel.send("".join(pkgs[:3]))
+    except:
+        await message.channel.send("There was an error or your result did not return anything!")

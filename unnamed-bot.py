@@ -42,7 +42,8 @@ commands = {
     "sudo perm":                                                            cmds.permissions.handle_message,
     "sudo embed":                                                           cmds.embed.handle_message,
     "sudo help":                                                            cmds.about.handle_help_message,
-    "pacman -Ss":                                                           cmds.pacman.handle_message
+    "pacman -Ss":                                                           cmds.pacman.handle_message,
+    "yay -Ss":                                                              cmds.pacman.handle_aur_message
 }
 
 class UnnamedClient(discord.Client):
