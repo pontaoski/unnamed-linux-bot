@@ -2,14 +2,16 @@
 import urllib.parse
 import requests
 import cmds.cmdutils
+from cmds.cmdutils import _c
 
 async def handle_message(message):
-    cmd = cmds.cmdutils.get_content(message.content)
-    
-    if len(cmd) == 0:
+    lex = cmds.cmdutils.lex_command(message)
+    cmd = _c(lex)
+
+    if cmd.query_length == 0:
         await message.channel.send("Not enough args!")
 
-    urlcmd = urllib.parse.quote(cmd)
+    urlcmd = urllib.parse.quote(cmd.content)
 
     URL = "https://rextester.com/rundotnet/api?LanguageChoice=38&Program=" + urlcmd
 
@@ -26,4 +28,4 @@ async def handle_message(message):
     if data["Result"] is not None:
         output += data["Result"]
 
-    await message.channel.send("```\n" + message.author.display_name + "@unnamed-linux" + " > " + cmd + "\n" + output + "\n```")
+    await cmd.st(content="```\n" + message.author.display_name + "@unnamed-linux" + " > " + cmd.content + "\n" + output + "\n```")

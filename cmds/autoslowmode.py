@@ -9,6 +9,7 @@ async def disable_slowmode(message):
     await message.channel.edit(slowmode_delay=0)
 
 async def handle_message(message: discord.Message):
+    return
     global slowdict
     author = str(message.author.id)
     time = message.created_at

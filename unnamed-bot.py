@@ -24,6 +24,9 @@ import cmds.rolemenu
 import cmds.profile
 import cmds.permissions
 import cmds.pacman
+import cmds.echo
+import cmds.cmdutils
+import cmds.quote
 
 config = configparser.ConfigParser()
 commands = {
@@ -43,7 +46,10 @@ commands = {
     "sudo embed":                                                           cmds.embed.handle_message,
     "sudo help":                                                            cmds.about.handle_help_message,
     "pacman -Ss":                                                           cmds.pacman.handle_message,
-    "yay -Ss":                                                              cmds.pacman.handle_aur_message
+    "yay -Ss":                                                              cmds.pacman.handle_aur_message,
+    "sudo echo":                                                            cmds.echo.echo_message,
+    "sudo clearlex":                                                        cmds.cmdutils.clear_lexes,
+    "sudo quote":                                                           cmds.quote.handle_message
 }
 
 class UnnamedClient(discord.Client):
@@ -71,7 +77,7 @@ class UnnamedClient(discord.Client):
     async def on_ready(self):
         print('Logged on as', self.user)
 
-    async def on_message(self, message):
+    async def message(self, message):
         global config
         if message.author == self.user:
             logfile = open(config['Discord']['MsgLogPath'] + "/" + str(message.channel.id) + ".log", "a+")
@@ -90,6 +96,16 @@ class UnnamedClient(discord.Client):
         for i in message.embeds:
             logfile.write(str(i.to_dict()) + "\n\n")
         logfile.write(message.clean_content + "\n\n")
+
+    async def on_message(self, message):
+        await self.message(message)
+
+    async def on_message_edit(self, before, after):
+        await self.message(after)
+
+    async def on_messsage_delete(self, message):
+        await cmds.cmdutils.message_delete(message)
+
 
 if path.exists("config.ini"):
     config.read("config.ini")

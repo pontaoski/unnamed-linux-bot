@@ -2,6 +2,7 @@
 import discord
 import urllib.parse
 import cmds.cmdutils
+from cmds.cmdutils import _c
 import json
 import requests
 import time
@@ -10,9 +11,11 @@ from pathlib import Path
 
 # flatpak search 
 async def handle_message(message):
-    query = cmds.cmdutils.get_content(message.content)
-    if len(query) == 0:
-        await message.channel.send("Not enough args!")
+    lex = cmds.cmdutils.lex_command(message)
+    cmd = _c(lex)
+
+    if cmd.query_length == 0:
+        await cmd.st("Not enough args!")
     query_casefold = query.casefold()
     
     update_required = True
@@ -101,7 +104,7 @@ async def handle_message(message):
         urlquery = urllib.parse.quote(query)
         response += f"\nView full results: <https://flathub.org/apps/search/{urlquery}>"
         
-    await message.channel.send(response)
+    await cmd.st(response)
 
     # embed = discord.Embed(title="flathub search results for " + query, color=0x4a86cf, url="https://flathub.org/apps/search/" + urlquery)
     # await message.channel.send("flathub search results for " + query + ":\n" + "https://flathub.org/apps/search/" + urlquery)

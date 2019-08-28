@@ -1,19 +1,18 @@
 #!/usr/bin/env python3
 import discord
 import cmds.cmdutils
+from cmds.cmdutils import _c
 
 async def handle_message(message: discord.Message):
-    print("called")
     if "sudoer" in [y.name.lower() for y in message.author.roles] and not message.author.guild_permissions.administrator:
-        print("not sudoer")
         return
 
-    cmd = cmds.cmdutils.get_content(message.content)
-    cmd_array = cmd.split()
+    lex = cmds.cmdutils.lex_command(message)
+    cmd = _c(lex)
 
-    if cmd_array[0] == "stop":
-        await message.channel.send("🛑 Stopping chat... 🛑")
+    if cmd.query_array[0] == "stop":
+        await cmd.st("🛑 Stopping chat... 🛑")
         await message.channel.edit(slowmode_delay=30)
-    elif cmd_array[0] == "start":
-        await message.channel.send("✔️ Starting chat... ✔️")
+    elif cmd.query_array[0] == "start":
+        await cmd.st("✔️ Starting chat... ✔️")
         await message.channel.edit(slowmode_delay=0)

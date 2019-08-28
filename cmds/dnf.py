@@ -2,6 +2,7 @@
 import discord
 import urllib.parse
 import cmds.cmdutils
+from cmds.cmdutils import _c
 import requests
 import configparser
 
@@ -16,25 +17,25 @@ fedora_dnf_obj = dnf.Base()
 async def handle_message(message: discord.Message):
     global fedora_dnf_obj
 
-    query = cmds.cmdutils.get_content(message.content)
+    lex = cmds.cmdutils.lex_command(message)
+    cmd = _c(lex)
     
-    if len(query) == 0:
-        await message.channel.send("Not enough args!")
+    if cmd.query_length == 0:
+        await cmd.st("Not enough args!")
 
     dnf_query = fedora_dnf_obj.sack.query()
     available_packages = dnf_query.available()
-    available_packages = available_packages.filter(name__substr=query,arch=["noarch","x86_64"])
+    available_packages = available_packages.filter(name__substr=cmd.content,arch=["noarch","x86_64"])
 
     pkgs = []
 
     for pkg in available_packages:
         pkgs.append(" ‣ `{}` - {}\n".format(pkg.name, pkg.summary))
-
+ 
     try:
-        await message.channel.send("**{} search results for `{}` in Fedora**\n\n".format(len(pkgs), query))
-        await message.channel.send("".join(pkgs[:3]))
+        await cmd.st("**{} search results for `{}` in Fedora**\n\n".format(len(pkgs), cmd.content) + "".join(pkgs[:3]))
     except:
-        await message.channel.send("There was an error!")
+        await cmd.st("There was an error!")
 
 def init_dnf(config: configparser.ConfigParser):
     global fedora_dnf_obj

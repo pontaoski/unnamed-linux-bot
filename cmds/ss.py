@@ -1,16 +1,20 @@
 #!/usr/bin/env python3
 import discord
 import cmds.cmdutils
+from cmds.cmdutils import _c
 import pickledb
 import requests
 
 async def handle_message(message):
     db = pickledb.load('ss.db', True)
 
-    query = cmds.cmdutils.get_content(message.content)
-    query_array = query.split()
-    if len(query) == 0:
-        await message.channel.send("Not enough args!")
+    lex = cmds.cmdutils.lex_command(message)
+    cmd = _c(lex)
+
+    query_array = cmd.query_array
+    
+    if cmd.query_length == 0:
+        await cmd.st("Not enough args!")
 
     sender = message.author
     sender_id = sender.id
@@ -30,32 +34,32 @@ async def handle_message(message):
     if query_array[0] == "set":
         query_array.pop(0)
         if not query_array:
-            await message.channel.send("Invalid arguments!")
+            await cmd.st("Invalid arguments!")
         
         if query_array[0] == "url":
             query_array.pop(0)
             if not query_array:
-                await message.channel.send("Invalid arguments!")
+                await cmd.st("Invalid arguments!")
 
             db.set(str(sender_id) + "_ss_url", query_array[0])
             if str(sender_id) not in screenshots:
                 screenshots_array.append(str(sender_id))
                 screenshots = ",".join(screenshots_array)
                 db.set("screenshots", screenshots)
-            await message.channel.send("Screenshot set!")
+            await cmd.st("Screenshot set!")
 
 
         elif query_array[0] == "desc":
             query_array.pop(0)
             if not query_array:
-                await message.channel.send("Invalid arguments!")
+                await cmd.st("Invalid arguments!")
 
             desc = " ".join(query_array)
             db.set(str(sender_id) + "_ss_desc", desc)
-            await message.channel.send("Description set!")
+            await cmd.st("Description set!")
 
         else:
-            await message.channel.send("Invalid arguments!")
+            await cmd.st("Invalid arguments!")
 
     elif query_array[0] == "ls" or query_array[0] == "list":
         await message.channel.trigger_typing()
@@ -89,7 +93,7 @@ async def handle_message(message):
         r = requests.post("https://write.as/api/posts",json=postdict)
         r_json = r.json()
         post_id = r_json["data"]["id"]
-        await message.channel.send("List of screenshots: https://write.as/" + post_id + ".md")
+        await cmd.st("List of screenshots: https://write.as/" + post_id + ".md")
 
     else:
         mentioned_member = cmds.cmdutils.get_user_closest_to_name(message.guild, query)
@@ -99,7 +103,7 @@ async def handle_message(message):
             a="a"
 
         if mentioned_member is None:
-            await message.channel.send("That person does not exist. Please be more specific, or check that they exist. If you were trying to use a command, please check your syntax.")
+            await cmd.st("That person does not exist. Please be more specific, or check that they exist. If you were trying to use a command, please check your syntax.")
             return
 
         url = db.get(str(mentioned_member.id) + "_ss_url")
@@ -109,10 +113,10 @@ async def handle_message(message):
             desc = ""
 
         if url is False or url == "":
-            await message.channel.send(mentioned_member.display_name + " does not have a screenshot set!")
+            await cmd.st(mentioned_member.display_name + " does not have a screenshot set!")
             return
 
         embed = discord.Embed(title=mentioned_member.display_name + "'s screenshot", color=mentioned_member.colour, description=desc)
         embed.set_image(url=url)
 
-        await message.channel.send(embed=embed)
+        await cmd.se(embed=embed)

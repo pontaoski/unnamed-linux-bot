@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import discord
 import cmds.cmdutils
+from cmds.cmdutils import _c
 from cmds.cmdutils import default
 import argparse
 import pickledb
@@ -8,8 +9,10 @@ import pickledb
 # 'dnf search query'
 async def handle_message(message: discord.Message):
     db = pickledb.load('profile.db', True)
-    query = cmds.cmdutils.get_content(message.content)
-    query_array = query.split()
+
+    lex = cmds.cmdutils.lex_command(message)
+    cmd = _c(lex)
+
     args_dict = {}
     sender = message.author
     sender_id = sender.id
@@ -33,9 +36,10 @@ async def handle_message(message: discord.Message):
     helpmsg += " \tSet your profile blurb.\n"
     helpmsg += "```"
 
+    query_array = cmd.query_array
+
     if not query_array:
-        await message.channel.send("Not enough arguments!")
-        await message.channel.send(helpmsg)
+        await cmd.st("Not enough arguments!\n\n" + helpmsg)
         return
 
     while query_array:
@@ -64,8 +68,7 @@ async def handle_message(message: discord.Message):
         query_array.pop(0)
             
     if args_dict == {}:
-        await message.channel.send("Invalid arguments!")
-        await message.channel.send(helpmsg)
+        await cmd.st("Invalid arguments!\n" + helpmsg)
     profile_updated = None
     if "desktop" in args_dict.keys():
         db.set(str(sender_id) + "_de", args_dict["desktop"])
@@ -87,7 +90,8 @@ async def handle_message(message: discord.Message):
         profile_updated = True
 
     if profile_updated is not None:
-        await message.channel.send("Profile updated!")
+        await cmd.st("Profile updated!")
+        return
 
     if "user" in args_dict.keys():
         mentioned_member = cmds.cmdutils.get_user_closest_to_name(message.guild, args_dict["user"])
@@ -97,7 +101,7 @@ async def handle_message(message: discord.Message):
             a="a"
 
         if mentioned_member is None:
-            await message.channel.send("That person does not exist. Please be more specific, or check that they exist. If you were trying to use a command, please check your syntax.")
+            await cmd.st("That person does not exist. Please be more specific, or check that they exist. If you were trying to use a command, please check your syntax.")
             return
         
         mmid = mentioned_member.id
@@ -120,4 +124,4 @@ async def handle_message(message: discord.Message):
             pmsg += "> \n"
             pmsg += "> *{}*\n".format(blurb)
 
-        await message.channel.send(pmsg)
+        await cmd.st(pmsg)
